@@ -1,17 +1,17 @@
-
 package com.example.footballmanager.controller;
 
-import com.example.footballmanager.dto.PlayerTransferRequest;
-import com.example.footballmanager.entity.Player;
+import com.example.footballmanager.dto.PlayerDTO;
+import com.example.footballmanager.dto.TransferRequestDTO;
 import com.example.footballmanager.service.PlayerService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/players")
+@RequestMapping("/api/players")
 public class PlayerController {
 
     private final PlayerService playerService;
@@ -21,34 +21,38 @@ public class PlayerController {
     }
 
     @GetMapping
-    public List<Player> getAll() {
-        return playerService.getAllPlayers();
+    public ResponseEntity<List<PlayerDTO>> getAllPlayers() {
+        List<PlayerDTO> players = playerService.getAllPlayers();
+        return ResponseEntity.ok(players);
     }
 
     @GetMapping("/{id}")
-    public Player getById(@PathVariable Long id) {
-        return playerService.getPlayerById(id);
+    public ResponseEntity<PlayerDTO> getPlayerById(@PathVariable Long id) {
+        PlayerDTO player = playerService.getPlayerById(id);
+        return ResponseEntity.ok(player);
     }
 
     @PostMapping
-    public Player create(@RequestBody @Valid Player player) {
-        return playerService.createPlayer(player);
+    public ResponseEntity<PlayerDTO> createPlayer(@Valid @RequestBody PlayerDTO playerDTO) {
+        PlayerDTO createdPlayer = playerService.createPlayer(playerDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPlayer);
     }
 
     @PutMapping("/{id}")
-    public Player update(@PathVariable Long id, @RequestBody @Valid Player player) {
-        return playerService.updatePlayer(id, player);
+    public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable Long id, @Valid @RequestBody PlayerDTO playerDTO) {
+        PlayerDTO updatedPlayer = playerService.updatePlayer(id, playerDTO);
+        return ResponseEntity.ok(updatedPlayer);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
         playerService.deletePlayer(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/transfer")
-    public ResponseEntity<String> transfer(@PathVariable Long id, @RequestBody @Valid PlayerTransferRequest request) {
-        playerService.transferPlayer(id, request.getTargetTeamId());
-        return ResponseEntity.ok("Player transferred successfully");
+    public ResponseEntity<String> transferPlayer(@PathVariable Long id, @Valid @RequestBody TransferRequestDTO transferRequest) {
+        playerService.transferPlayer(id, transferRequest.getTargetTeamId());
+        return ResponseEntity.ok("transfer successful");
     }
 }

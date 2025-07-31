@@ -1,4 +1,3 @@
-
 package com.example.footballmanager;
 
 import org.springframework.boot.SpringApplication;
